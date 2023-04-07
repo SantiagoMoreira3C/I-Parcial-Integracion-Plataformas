@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    # environment:
+    #   - userDB=joancema
+    env_file:
+      - ./env/mongo.env
+    ports:
+      - "27017:27017"
+  backend:
+    build: ./backend
+
+    ports:
+     - "2000:2000"
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      -mongodb
+
+  frontend:
+    build: ./frontend
+    ports:
+     -"3000:3000"
+    volumes:
+     - ./frontend/src:/app/src
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    depends_on:
+      - serviceName
